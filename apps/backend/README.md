@@ -39,6 +39,26 @@ The API listens at `http://localhost:3001/api/v1`. The database-backed health
 endpoint is `GET http://localhost:3001/api/v1/health`; it returns
 `{"status":"ok","database":"connected"}` when MongoDB is connected.
 
+## Seed deterministic sample data
+
+With MongoDB running and the backend `.env` configured, run this from
+`apps/backend`:
+
+```powershell
+npm run seed
+```
+
+The command upserts three predefined people, ten linked websites, and eighteen
+visits with fixed IDs and timestamps. It is safe to run repeatedly; the same
+records are updated instead of duplicated. The seed includes a broken link to
+`glassgarden.zz` for not-found handling.
+
+After seeding, these endpoints should return data:
+
+- `GET http://localhost:3001/api/v1/people` — three people.
+- `GET http://localhost:3001/api/v1/sites/tidepool.zz` — the Tidepool site.
+- `GET http://localhost:3001/api/v1/visits?personId=650000000000000000000001` — Sana's visits, newest first.
+
 ## Validate
 
 ```powershell
