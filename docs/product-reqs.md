@@ -1220,3 +1220,15 @@ The most important parts of this assessment are:
 8. Reliable website publishing.
 
 Build the application systematically, verify every phase, and do not sacrifice required functionality for decorative UI features.
+
+
+## Testing Requirements
+
+- Backend testing must use Jest.
+- Frontend unit and component testing must use Vitest and React Testing Library.
+- Use jest-dom for DOM assertions.
+- Use user-event for simulating user interactions.
+- Use jsdom as the frontend test environment.
+- End-to-end testing must use Playwright.
+- Test all critical application workflows.
+- Do not consider a feature complete until its relevant tests pass.
