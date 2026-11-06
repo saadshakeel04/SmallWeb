@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { CreateVisitInput, Person, Site, Visit, VisitPage } from "@/types/api";
+import type { CreateVisitInput, Person, SearchResponse, Site, Visit, VisitPage } from "@/types/api";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
@@ -34,6 +34,14 @@ export async function getVisits(
 ): Promise<VisitPage> {
   const response = await api.get<VisitPage>("/visits", {
     params: { personId, page, limit: HISTORY_PAGE_SIZE },
+    signal,
+  });
+  return response.data;
+}
+
+export async function searchSites(query: string, signal?: AbortSignal): Promise<SearchResponse> {
+  const response = await api.get<SearchResponse>("/sites/search", {
+    params: { q: query },
     signal,
   });
   return response.data;

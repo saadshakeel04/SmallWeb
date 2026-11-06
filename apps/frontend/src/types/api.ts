@@ -41,6 +41,19 @@ export interface CreateVisitInput {
   source: VisitSource;
 }
 
+export interface SearchResult {
+  address: string;
+  title: string;
+  excerpt: string;
+}
+
+export interface SearchResponse {
+  query: string;
+  total: number;
+  limit: number;
+  results: SearchResult[];
+}
+
 export interface NavigationEntry {
   id: string;
   address: string;

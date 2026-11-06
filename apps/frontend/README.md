@@ -70,3 +70,16 @@ entries. Select another visitor and confirm their visits are different. The
 seeded first visitor has eleven visits, so the panel should offer three pages.
 Refresh the app, reselect that visitor, and confirm the same history is still
 available.
+
+## Full-text search
+
+Open the Search tab beside History and search for a word or phrase. Multiword
+queries match as a phrase. Results include the site title, address, and an
+excerpt from matching page content.
+Selecting a result opens that site and records the visit with source `search`.
+
+To validate content search, rerun `npm run seed` in `apps/backend`, then search
+for `unusual birds`. Quiet Forest should appear even though those words are not
+in its title. Search for a phrase such as `no matching small web content` to
+check the empty state. Stop the backend and submit a search to check the error
+state; restore it and confirm another search succeeds.
