@@ -55,3 +55,18 @@ returns at its previous scroll position. Then visit `quietforest.zz` and
 `bluehour.zz`, press Back twice to Paperboats, then Forward once to Quiet
 Forest. Finally go Back to Paperboats and enter `clockworkcafe.zz`; Forward
 should now be disabled because the old forward entries were truncated.
+
+## Persistent browsing history
+
+Every successful typed or internal-link navigation is recorded for the visitor
+who opened it. Opening an address from the History panel records a separate
+`history` visit. Back and Forward only restore the in-memory browser stack and
+do not create visits. The panel loads the selected visitor's server history in
+pages of five entries.
+
+To validate history, browse several sites as one visitor and confirm the newest
+visits appear first. Use Back and Forward and confirm the list does not gain
+entries. Select another visitor and confirm their visits are different. The
+seeded first visitor has eleven visits, so the panel should offer three pages.
+Refresh the app, reselect that visitor, and confirm the same history is still
+available.

@@ -16,6 +16,30 @@ export interface Site {
 }
 
 export type NavigationSource = "typed" | "link" | "history" | "search" | "publish";
+export type VisitSource = NavigationSource;
+
+export interface Visit {
+  _id: string;
+  personId: string;
+  siteId: string;
+  address: string;
+  visitedAt: string;
+  source: VisitSource;
+}
+
+export interface VisitPage {
+  items: Visit[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface CreateVisitInput {
+  personId: string;
+  address: string;
+  source: VisitSource;
+}
 
 export interface NavigationEntry {
   id: string;

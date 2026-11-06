@@ -61,7 +61,7 @@ After seeding, these endpoints should return data:
 
 - `GET http://localhost:3001/api/v1/people` — three people.
 - `GET http://localhost:3001/api/v1/sites/tidepool.zz` — the Tidepool site.
-- `GET http://localhost:3001/api/v1/visits?personId=650000000000000000000001` — Sana's visits, newest first.
+- `GET http://localhost:3001/api/v1/visits?personId=650000000000000000000001` — the first seeded visitor's visits, newest first.
 
 ## Validate
 
