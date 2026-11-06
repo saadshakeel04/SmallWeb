@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { normalizeAddress } from '../../common/address';
+import { htmlToPlainText, sanitizeHtmlContent } from '../../common/html-sanitizer';
 import { Site, SiteDocument } from './schemas/site.schema';
 
 @Injectable()
@@ -20,6 +21,12 @@ export class SitesService {
       throw new NotFoundException('Website not found');
     }
 
-    return site;
+    const html = sanitizeHtmlContent(site.html);
+
+    return {
+      ...site,
+      html,
+      plainText: htmlToPlainText(html),
+    };
   }
 }

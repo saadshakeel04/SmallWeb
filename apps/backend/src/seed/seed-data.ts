@@ -1,3 +1,5 @@
+import { htmlToPlainText, sanitizeHtmlContent } from '../common/html-sanitizer';
+
 export const SEED_PEOPLE = [
   {
     id: '650000000000000000000001',
@@ -15,7 +17,6 @@ export const SEED_PEOPLE = [
     createdAt: '2025-01-01T00:00:00.000Z',
   },
 ] as const;
-
 const CONTENT = {
   tidepool: `At low tide, the pools along the north shore become small windows into a larger world. Anemones fold in the sun, shrimp move between ribbons of kelp, and the water keeps a little of the sky. Sana visits every week to record what has changed. Start with <a href="https://paperboats.zz">the paper boat journal</a>, then follow the shore toward <a href="https://quietforest.zz">Quiet Forest</a>. A path to <a href="https://glassgarden.zz">Glass Garden</a> is listed here too, though that address has never been built.`,
   paperboats: `The paper boat journal began with notes passed between two neighbors on rainy afternoons. Each page carries a small observation: a gutter full of leaves, a cloud shaped like a sail, or a name written on a folded map. Theo keeps the archive and adds a new entry when the weather turns. The next page is <a href="https://quietforest.zz">a walk through Quiet Forest</a>.`,
@@ -29,30 +30,28 @@ const CONTENT = {
   starlingpost: `Starling Post is a neighborhood letter desk with a map of every route its mail has taken. Mara pins up postcards when they arrive and copies the handwritten directions into a public notebook. Some journeys are short; others cross the entire small web. The desk closes at dusk, when the birds settle on the station roof.`,
 } as const;
 
-function plainTextFromSeedHtml(html: string): string {
-  return html
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 const site = (
   id: string,
   address: string,
   title: string,
   html: string,
   authorId: string,
-) => ({
-  id,
-  address,
-  title,
-  html: `<main><h1>${title}</h1><p>${html}</p></main>`,
-  plainText: plainTextFromSeedHtml(`<h1>${title}</h1><p>${html}</p>`),
-  authorId,
-  createdAt: '2025-01-02T12:00:00.000Z',
-  updatedAt: '2025-01-02T12:00:00.000Z',
-});
+) => {
+  const sanitizedHtml = sanitizeHtmlContent(
+    `<main><h1>${title}</h1><p>${html}</p></main>`,
+  );
+
+  return {
+    id,
+    address,
+    title,
+    html: sanitizedHtml,
+    plainText: htmlToPlainText(sanitizedHtml),
+    authorId,
+    createdAt: '2025-01-02T12:00:00.000Z',
+    updatedAt: '2025-01-02T12:00:00.000Z',
+  };
+};
 
 export const SEED_SITES = [
   site('660000000000000000000001', 'tidepool.zz', 'Tidepool Notes', CONTENT.tidepool, SEED_PEOPLE[0].id),

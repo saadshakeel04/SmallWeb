@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { getPeople, getSite } from "@/lib/api";
 import { useBrowserStore } from "@/stores/browser-store";
+import SiteFrame from "@/components/browser/site-frame";
 import type { Person, Site } from "@/types/api";
 
 type PageState = "idle" | "loading" | "loaded" | "not-found" | "error";
@@ -78,9 +79,8 @@ export default function BrowserShell() {
     setSelectedPerson(people.find((person) => person._id === personId) ?? null);
   }
 
-  async function handleNavigate(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const normalizedAddress = address.trim().toLowerCase();
+  const navigateToAddress = useCallback(async (requestedAddress: string) => {
+    const normalizedAddress = requestedAddress.trim().toLowerCase();
     if (!normalizedAddress) return;
 
     if (!selectedPerson) {
@@ -107,6 +107,11 @@ export default function BrowserShell() {
           : "error",
       );
     }
+  }, [selectedPerson]);
+
+  function handleNavigate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void navigateToAddress(address);
   }
 
   const visitorLabel = selectedPerson?.name ?? "Choose a visitor";
@@ -281,25 +286,17 @@ export default function BrowserShell() {
             )}
 
             {pageState === "loaded" && site && (
-              <article className="mx-auto max-w-3xl rounded-2xl border border-[#e0e8e3] bg-white/95 p-6 shadow-sm sm:p-9">
-                <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#668077]">
-                  <span className="rounded-full bg-[#eaf3ee] px-3 py-1">{site.address}</span>
-                  <span>
-                    Published by {people.find((person) => person._id === site.authorId)?.name ?? "a Small Web neighbor"}
-                  </span>
+              <div className="mx-auto max-w-4xl">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-[#708079]">
+                  <span className="font-medium text-[#426357]">{site.title}</span>
+                  <span>{site.address} · by {people.find((person) => person._id === site.authorId)?.name ?? "a Small Web neighbor"}</span>
                 </div>
-                <h2 className="mt-5 text-3xl font-semibold tracking-tight text-[#1f3930] sm:text-4xl">
-                  {site.title}
-                </h2>
-                <div className="my-6 h-px bg-[#e8eeea]" />
-                <p className="whitespace-pre-wrap text-[0.98rem] leading-8 text-[#485c54]">
-                  {site.plainText}
+                <SiteFrame site={site} onNavigate={(nextAddress) => void navigateToAddress(nextAddress)} />
+                <p className="mt-3 flex items-center gap-2 px-1 text-xs text-[#7d8c85]">
+                  <ShieldCheck size={14} aria-hidden="true" />
+                  Scripts and external page resources are blocked inside this sandbox.
                 </p>
-                <div className="mt-8 flex items-center gap-2 border-t border-[#edf1ee] pt-5 text-xs text-[#7d8c85]">
-                  <ShieldCheck size={15} aria-hidden="true" />
-                  <span>Page content is shown as text while safe page rendering is being built.</span>
-                </div>
-              </article>
+              </div>
             )}
 
             {pageState === "idle" && (
