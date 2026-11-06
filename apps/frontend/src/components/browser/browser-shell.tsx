@@ -13,7 +13,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import SiteFrame from "@/components/browser/site-frame";
-import { getPeople, getSite } from "@/lib/api";
+import HistoryPanel from "@/components/history/history-panel";
+import { getPeople, getSite, recordVisit } from "@/lib/api";
 import { useBrowserStore } from "@/stores/browser-store";
 import type { NavigationSource, Person } from "@/types/api";
 
@@ -55,6 +56,8 @@ export default function BrowserShell() {
   const [address, setAddress] = useState("");
   const [requestState, setRequestState] = useState<RequestState>("idle");
   const [pageError, setPageError] = useState<string | null>(null);
+  const [visitSaveError, setVisitSaveError] = useState<string | null>(null);
+  const [historyRefreshToken, setHistoryRefreshToken] = useState(0);
   const navigationRequestId = useRef(0);
 
   const loadPeople = useCallback(async (signal?: AbortSignal) => {
@@ -84,7 +87,11 @@ export default function BrowserShell() {
   }, []);
 
   function handlePersonChange(personId: string) {
+    navigationRequestId.current += 1;
+    setRequestState("idle");
+    setPageError(null);
     setSelectedPerson(people.find((person) => person._id === personId) ?? null);
+    setVisitSaveError(null);
   }
 
   const navigateToAddress = useCallback(
@@ -102,6 +109,7 @@ export default function BrowserShell() {
       const requestId = ++navigationRequestId.current;
       setAddress(normalizedAddress);
       setPageError(null);
+      setVisitSaveError(null);
       setRequestState("loading");
 
       try {
@@ -110,6 +118,20 @@ export default function BrowserShell() {
         navigate(site, source);
         setAddress(site.address);
         setRequestState("idle");
+        setVisitSaveError(null);
+
+        try {
+          await recordVisit({
+            personId: selectedPerson._id,
+            address: site.address,
+            source,
+          });
+          setHistoryRefreshToken((token) => token + 1);
+        } catch {
+          if (requestId === navigationRequestId.current) {
+            setVisitSaveError("This page opened, but the visit could not be saved. Open it again to retry.");
+          }
+        }
       } catch (error) {
         if (requestId !== navigationRequestId.current) return;
         setPageError(describeRequestError(error));
@@ -133,6 +155,7 @@ export default function BrowserShell() {
     if (!target) return;
     navigationRequestId.current += 1;
     setPageError(null);
+    setVisitSaveError(null);
     setRequestState("idle");
     setAddress(target.address);
     goBack();
@@ -143,6 +166,7 @@ export default function BrowserShell() {
     if (!target) return;
     navigationRequestId.current += 1;
     setPageError(null);
+    setVisitSaveError(null);
     setRequestState("idle");
     setAddress(target.address);
     goForward();
@@ -232,6 +256,7 @@ export default function BrowserShell() {
           </div>
         </header>
 
+        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_19rem]">
         <section
           className="overflow-hidden rounded-[1.75rem] border border-[#dfe5e2] bg-white shadow-[0_18px_55px_-35px_rgba(26,55,46,0.3)]"
           aria-label="Small Web browser"
@@ -301,6 +326,12 @@ export default function BrowserShell() {
           <p id="address-help" className="sr-only">
             Enter a fictional .zz address, such as tidepool.zz.
           </p>
+
+          {visitSaveError && (
+            <p className="mx-5 mt-4 rounded-xl border border-[#f0d5ce] bg-[#fff8f5] px-4 py-3 text-xs leading-5 text-[#93483e] sm:mx-10" role="alert">
+              {visitSaveError}
+            </p>
+          )}
 
           <div className="min-h-[27rem] bg-[radial-gradient(ellipse_at_top,_#f1f7f4_0%,_#ffffff_56%)] px-5 py-8 sm:px-10 sm:py-12">
             {requestState === "loading" && (
@@ -379,6 +410,19 @@ export default function BrowserShell() {
             <span>Only addresses in the Small Web are available</span>
           </footer>
         </section>
+        {selectedPerson ? (
+          <HistoryPanel
+            key={selectedPerson._id}
+            person={selectedPerson}
+            refreshToken={historyRefreshToken}
+            onNavigate={(historyAddress) => void navigateToAddress(historyAddress, "history")}
+          />
+        ) : (
+          <aside className="rounded-[1.5rem] border border-[#dfe5e2] bg-white p-5 text-sm text-[#718078] shadow-sm">
+            Choose a visitor to see their browsing history.
+          </aside>
+        )}
+        </div>
       </div>
     </main>
   );
