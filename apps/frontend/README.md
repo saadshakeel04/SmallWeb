@@ -28,6 +28,11 @@ Open `http://localhost:3000`, select a visitor, and enter an address such as
 by the backend and displayed inside a sandboxed iframe with scripts and network
 resources blocked. Internal `.zz` links are intercepted by the parent browser.
 
+Navigation entries and the current index are held in Zustand separately from
+persistent visit history. Back and Forward select cached entries without
+fetching the site again. Each entry keeps its own iframe scroll position, and a
+new successful navigation after Back truncates the forward entries.
+
 ## Validate
 
 From `apps/frontend`, run:
@@ -42,3 +47,11 @@ the frontend, select a visitor, and browse to `tidepool.zz`. Verify its links
 stay inside the application by opening the paper boat journal link. Try
 `glassgarden.zz` to see the not-found state. Stop the backend and reload the
 frontend to see the connection error and people retry action.
+
+To check browser navigation, first rerun `npm run seed` in `apps/backend` so
+the long Tidepool page is available. Browse Tidepool, scroll well down, and
+enter `paperboats.zz` in the address bar. Press Back and confirm Tidepool
+returns at its previous scroll position. Then visit `quietforest.zz` and
+`bluehour.zz`, press Back twice to Paperboats, then Forward once to Quiet
+Forest. Finally go Back to Paperboats and enter `clockworkcafe.zz`; Forward
+should now be disabled because the old forward entries were truncated.
