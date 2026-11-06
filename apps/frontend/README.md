@@ -1,8 +1,8 @@
 # Small Web frontend
 
 The frontend is a Next.js App Router application. It provides the browser shell,
-visitor selector, address bar, and loading, not-found, and connection-error
-states.
+visitor selector, address bar, sandboxed website viewer, and loading, not-found,
+and connection-error states.
 
 ## Configure and run
 
@@ -24,8 +24,9 @@ npm run dev
 
 Open `http://localhost:3000`, select a visitor, and enter an address such as
 `tidepool.zz`. The frontend requests people from `/people` and websites from
-`/sites/:address` under the configured API base URL. Website text is shown as
-plain text until the sandboxed renderer is implemented.
+`/sites/:address` under the configured API base URL. Website HTML is sanitized
+by the backend and displayed inside a sandboxed iframe with scripts and network
+resources blocked. Internal `.zz` links are intercepted by the parent browser.
 
 ## Validate
 
@@ -37,6 +38,7 @@ npm run lint
 ```
 
 For a manual API integration check, keep MongoDB and the backend running, open
-the frontend, select a visitor, and browse to `tidepool.zz`. Try
+the frontend, select a visitor, and browse to `tidepool.zz`. Verify its links
+stay inside the application by opening the paper boat journal link. Try
 `glassgarden.zz` to see the not-found state. Stop the backend and reload the
 frontend to see the connection error and people retry action.

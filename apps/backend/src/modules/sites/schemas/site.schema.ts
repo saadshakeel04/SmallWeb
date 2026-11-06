@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { htmlToPlainText, sanitizeHtmlContent } from '../../../common/html-sanitizer';
 import { Person } from '../../people/schemas/person.schema';
 
 export type SiteDocument = HydratedDocument<Site>;
@@ -31,5 +32,12 @@ export class Site {
 }
 
 export const SiteSchema = SchemaFactory.createForClass(Site);
+SiteSchema.pre('validate', function sanitizeSiteContent() {
+  if (typeof this.html !== 'string') return;
+
+  this.html = sanitizeHtmlContent(this.html);
+  this.plainText = htmlToPlainText(this.html);
+});
+
 SiteSchema.index({ address: 1 }, { unique: true });
 SiteSchema.index({ title: 'text', plainText: 'text' });

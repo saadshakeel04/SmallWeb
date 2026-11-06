@@ -53,6 +53,10 @@ visits with fixed IDs and timestamps. It is safe to run repeatedly; the same
 records are updated instead of duplicated. The seed includes a broken link to
 `glassgarden.zz` for not-found handling.
 
+Seeded HTML is sanitized before it is written. Site documents are sanitized and
+have searchable plain text regenerated when Mongoose validates them, and site
+responses are sanitized again before they are returned.
+
 After seeding, these endpoints should return data:
 
 - `GET http://localhost:3001/api/v1/people` — three people.
@@ -66,4 +70,10 @@ npm test -- --runInBand
 npm run test:e2e -- --runInBand
 npm run lint
 npm run build
+```
+
+Run the focused HTML security checks with:
+
+```powershell
+npm test -- --runInBand src/common/html-sanitizer.spec.ts
 ```
