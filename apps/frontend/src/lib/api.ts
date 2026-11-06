@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { CreateVisitInput, Person, SearchResponse, Site, Visit, VisitPage } from "@/types/api";
+import type { CreateSiteInput, CreateVisitInput, Person, SearchResponse, Site, Visit, VisitPage } from "@/types/api";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
@@ -19,6 +19,11 @@ export async function getPeople(signal?: AbortSignal): Promise<Person[]> {
 
 export async function getSite(address: string): Promise<Site> {
   const response = await api.get<Site>(`/sites/${encodeURIComponent(address)}`);
+  return response.data;
+}
+
+export async function publishSite(input: CreateSiteInput): Promise<Site> {
+  const response = await api.post<Site>("/sites", input);
   return response.data;
 }
 

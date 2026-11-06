@@ -83,3 +83,12 @@ for `unusual birds`. Quiet Forest should appear even though those words are not
 in its title. Search for a phrase such as `no matching small web content` to
 check the empty state. Stop the backend and submit a search to check the error
 state; restore it and confirm another search succeeds.
+
+## Publishing
+
+Select **Publish**, enter a unique `.zz` address, title, publisher, and HTML,
+then submit. The backend sanitizes the HTML and derives searchable text before
+it saves the site. The success message offers a **Visit your new site** action.
+Try publishing to an existing address to confirm the duplicate error is shown
+without replacing the existing page. A page containing only removed unsafe
+content should be rejected; for example, submit `<script>alert(1)</script>`.

@@ -9,6 +9,7 @@ import {
   Globe2,
   History as HistoryIcon,
   LoaderCircle,
+  PenLine,
   Search,
   ShieldCheck,
   Sparkles,
@@ -16,6 +17,7 @@ import {
 import SiteFrame from "@/components/browser/site-frame";
 import HistoryPanel from "@/components/history/history-panel";
 import SearchPanel from "@/components/search/search-panel";
+import PublishPanel from "@/components/publish/publish-panel";
 import { getPeople, getSite, recordVisit } from "@/lib/api";
 import { useBrowserStore } from "@/stores/browser-store";
 import type { NavigationSource, Person } from "@/types/api";
@@ -60,7 +62,7 @@ export default function BrowserShell() {
   const [pageError, setPageError] = useState<string | null>(null);
   const [visitSaveError, setVisitSaveError] = useState<string | null>(null);
   const [historyRefreshToken, setHistoryRefreshToken] = useState(0);
-  const [sidebarTab, setSidebarTab] = useState<"history" | "search">("history");
+  const [sidebarTab, setSidebarTab] = useState<"history" | "search" | "publish">("history");
   const navigationRequestId = useRef(0);
 
   const loadPeople = useCallback(async (signal?: AbortSignal) => {
@@ -181,6 +183,10 @@ export default function BrowserShell() {
   );
   const handleSearchNavigate = useCallback(
     (nextAddress: string) => void navigateToAddress(nextAddress, "search"),
+    [navigateToAddress],
+  );
+  const handlePublishNavigate = useCallback(
+    (nextAddress: string) => void navigateToAddress(nextAddress, "publish"),
     [navigateToAddress],
   );
   const handleFrameScroll = useCallback(
@@ -425,7 +431,7 @@ export default function BrowserShell() {
               aria-selected={sidebarTab === "history"}
               aria-controls="history-panel"
               onClick={() => setSidebarTab("history")}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition ${sidebarTab === "history" ? "bg-[#eaf3ee] text-[#315b49]" : "text-[#75847d] hover:bg-[#f5f8f6]"}`}
+              className={`flex flex-1 items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-medium transition ${sidebarTab === "history" ? "bg-[#eaf3ee] text-[#315b49]" : "text-[#75847d] hover:bg-[#f5f8f6]"}`}
             >
               <HistoryIcon size={14} aria-hidden="true" /> History
             </button>
@@ -435,9 +441,19 @@ export default function BrowserShell() {
               aria-selected={sidebarTab === "search"}
               aria-controls="search-panel"
               onClick={() => setSidebarTab("search")}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition ${sidebarTab === "search" ? "bg-[#eaf3ee] text-[#315b49]" : "text-[#75847d] hover:bg-[#f5f8f6]"}`}
+              className={`flex flex-1 items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-medium transition ${sidebarTab === "search" ? "bg-[#eaf3ee] text-[#315b49]" : "text-[#75847d] hover:bg-[#f5f8f6]"}`}
             >
               <Search size={14} aria-hidden="true" /> Search
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={sidebarTab === "publish"}
+              aria-controls="publish-panel"
+              onClick={() => setSidebarTab("publish")}
+              className={`flex flex-1 items-center justify-center gap-1 rounded-lg px-2 py-2 text-[11px] font-medium transition ${sidebarTab === "publish" ? "bg-[#eaf3ee] text-[#315b49]" : "text-[#75847d] hover:bg-[#f5f8f6]"}`}
+            >
+              <PenLine size={13} aria-hidden="true" /> Publish
             </button>
           </div>
           <div id="history-panel" role="tabpanel" hidden={sidebarTab !== "history"}>
@@ -456,6 +472,13 @@ export default function BrowserShell() {
           </div>
           <div id="search-panel" role="tabpanel" hidden={sidebarTab !== "search"}>
             <SearchPanel onNavigate={handleSearchNavigate} />
+          </div>
+          <div id="publish-panel" role="tabpanel" hidden={sidebarTab !== "publish"}>
+            <PublishPanel
+              people={people}
+              defaultPublisherId={selectedPerson?._id ?? ""}
+              onVisit={handlePublishNavigate}
+            />
           </div>
         </div>
         </div>

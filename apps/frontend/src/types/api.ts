@@ -41,6 +41,13 @@ export interface CreateVisitInput {
   source: VisitSource;
 }
 
+export interface CreateSiteInput {
+  address: string;
+  title: string;
+  html: string;
+  publisherId: string;
+}
+
 export interface SearchResult {
   address: string;
   title: string;

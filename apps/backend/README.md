@@ -62,7 +62,10 @@ After seeding, these endpoints should return data:
 - `GET http://localhost:3001/api/v1/people` — three people.
 - `GET http://localhost:3001/api/v1/sites/tidepool.zz` — the Tidepool site.
 - `GET http://localhost:3001/api/v1/sites/search?q=unusual%20birds` — sites matching title or body text, including Quiet Forest by its seeded page text.
+- `POST http://localhost:3001/api/v1/sites` — publish a site with `address`, `title`, `html`, and `publisherId`.
 - `GET http://localhost:3001/api/v1/visits?personId=650000000000000000000001` — the first seeded visitor's visits, newest first.
+
+Publishing trims and normalizes the `.zz` address, verifies the publisher, sanitizes HTML, and derives searchable plain text. Duplicate addresses return HTTP 409 and are never overwritten. The address is unique across seeded and published sites.
 
 ## Validate
 
