@@ -61,6 +61,7 @@ After seeding, these endpoints should return data:
 
 - `GET http://localhost:3001/api/v1/people` — three people.
 - `GET http://localhost:3001/api/v1/sites/tidepool.zz` — the Tidepool site.
+- `GET http://localhost:3001/api/v1/sites/search?q=unusual%20birds` — sites matching title or body text, including Quiet Forest by its seeded page text.
 - `GET http://localhost:3001/api/v1/visits?personId=650000000000000000000001` — the first seeded visitor's visits, newest first.
 
 ## Validate
