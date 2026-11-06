@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import axios from "axios";
 import {
   ArrowLeft,
@@ -12,12 +12,12 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import SiteFrame from "@/components/browser/site-frame";
 import { getPeople, getSite } from "@/lib/api";
 import { useBrowserStore } from "@/stores/browser-store";
-import SiteFrame from "@/components/browser/site-frame";
-import type { Person, Site } from "@/types/api";
+import type { NavigationSource, Person } from "@/types/api";
 
-type PageState = "idle" | "loading" | "loaded" | "not-found" | "error";
+type RequestState = "idle" | "loading" | "not-found" | "error";
 
 function describeRequestError(error: unknown): string {
   if (axios.isAxiosError<{ message?: string | string[] }>(error)) {
@@ -41,13 +41,21 @@ function describeRequestError(error: unknown): string {
 export default function BrowserShell() {
   const selectedPerson = useBrowserStore((state) => state.selectedPerson);
   const setSelectedPerson = useBrowserStore((state) => state.setSelectedPerson);
+  const navigationEntries = useBrowserStore((state) => state.navigationEntries);
+  const currentNavigationIndex = useBrowserStore((state) => state.currentNavigationIndex);
+  const navigate = useBrowserStore((state) => state.navigate);
+  const goBack = useBrowserStore((state) => state.goBack);
+  const goForward = useBrowserStore((state) => state.goForward);
+  const saveScrollPosition = useBrowserStore((state) => state.saveScrollPosition);
+  const currentEntry = navigationEntries[currentNavigationIndex] ?? null;
+
   const [people, setPeople] = useState<Person[]>([]);
   const [peopleLoading, setPeopleLoading] = useState(true);
   const [peopleError, setPeopleError] = useState<string | null>(null);
   const [address, setAddress] = useState("");
-  const [pageState, setPageState] = useState<PageState>("idle");
-  const [site, setSite] = useState<Site | null>(null);
+  const [requestState, setRequestState] = useState<RequestState>("idle");
   const [pageError, setPageError] = useState<string | null>(null);
+  const navigationRequestId = useRef(0);
 
   const loadPeople = useCallback(async (signal?: AbortSignal) => {
     setPeopleLoading(true);
@@ -79,40 +87,75 @@ export default function BrowserShell() {
     setSelectedPerson(people.find((person) => person._id === personId) ?? null);
   }
 
-  const navigateToAddress = useCallback(async (requestedAddress: string) => {
-    const normalizedAddress = requestedAddress.trim().toLowerCase();
-    if (!normalizedAddress) return;
+  const navigateToAddress = useCallback(
+    async (requestedAddress: string, source: NavigationSource) => {
+      const normalizedAddress = requestedAddress.trim().toLowerCase();
+      if (!normalizedAddress) return;
 
-    if (!selectedPerson) {
-      setPageError("Choose a visitor before browsing the Small Web.");
-      setPageState("error");
-      return;
-    }
+      if (!selectedPerson) {
+        navigationRequestId.current += 1;
+        setPageError("Choose a visitor before browsing the Small Web.");
+        setRequestState("error");
+        return;
+      }
 
-    setAddress(normalizedAddress);
-    setPageError(null);
-    setSite(null);
-    setPageState("loading");
+      const requestId = ++navigationRequestId.current;
+      setAddress(normalizedAddress);
+      setPageError(null);
+      setRequestState("loading");
 
-    try {
-      const result = await getSite(normalizedAddress);
-      setSite(result);
-      setAddress(result.address);
-      setPageState("loaded");
-    } catch (error) {
-      setPageError(describeRequestError(error));
-      setPageState(
-        axios.isAxiosError(error) && error.response?.status === 404
-          ? "not-found"
-          : "error",
-      );
-    }
-  }, [selectedPerson]);
+      try {
+        const site = await getSite(normalizedAddress);
+        if (requestId !== navigationRequestId.current) return;
+        navigate(site, source);
+        setAddress(site.address);
+        setRequestState("idle");
+      } catch (error) {
+        if (requestId !== navigationRequestId.current) return;
+        setPageError(describeRequestError(error));
+        setRequestState(
+          axios.isAxiosError(error) && error.response?.status === 404
+            ? "not-found"
+            : "error",
+        );
+      }
+    },
+    [navigate, selectedPerson],
+  );
 
   function handleNavigate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    void navigateToAddress(address);
+    void navigateToAddress(address, "typed");
   }
+
+  function handleBack() {
+    const target = navigationEntries[currentNavigationIndex - 1];
+    if (!target) return;
+    navigationRequestId.current += 1;
+    setPageError(null);
+    setRequestState("idle");
+    setAddress(target.address);
+    goBack();
+  }
+
+  function handleForward() {
+    const target = navigationEntries[currentNavigationIndex + 1];
+    if (!target) return;
+    navigationRequestId.current += 1;
+    setPageError(null);
+    setRequestState("idle");
+    setAddress(target.address);
+    goForward();
+  }
+
+  const handleInternalNavigate = useCallback(
+    (nextAddress: string) => void navigateToAddress(nextAddress, "link"),
+    [navigateToAddress],
+  );
+  const handleFrameScroll = useCallback(
+    (entryId: string, scrollY: number) => saveScrollPosition(entryId, scrollY),
+    [saveScrollPosition],
+  );
 
   const visitorLabel = selectedPerson?.name ?? "Choose a visitor";
 
@@ -197,19 +240,21 @@ export default function BrowserShell() {
             <div className="flex items-center gap-2" aria-label="Browser navigation">
               <button
                 type="button"
-                disabled
+                onClick={handleBack}
+                disabled={currentNavigationIndex <= 0}
                 aria-label="Back"
                 title="Back"
-                className="flex size-9 cursor-not-allowed items-center justify-center rounded-full text-[#aab5b0]"
+                className="flex size-9 items-center justify-center rounded-full text-[#55726a] transition hover:bg-[#eaf1ed] disabled:cursor-not-allowed disabled:text-[#aab5b0] disabled:hover:bg-transparent"
               >
                 <ArrowLeft size={18} aria-hidden="true" />
               </button>
               <button
                 type="button"
-                disabled
+                onClick={handleForward}
+                disabled={currentNavigationIndex >= navigationEntries.length - 1}
                 aria-label="Forward"
                 title="Forward"
-                className="flex size-9 cursor-not-allowed items-center justify-center rounded-full text-[#aab5b0]"
+                className="flex size-9 items-center justify-center rounded-full text-[#55726a] transition hover:bg-[#eaf1ed] disabled:cursor-not-allowed disabled:text-[#aab5b0] disabled:hover:bg-transparent"
               >
                 <ArrowRight size={18} aria-hidden="true" />
               </button>
@@ -241,11 +286,11 @@ export default function BrowserShell() {
               />
               <button
                 type="submit"
-                disabled={pageState === "loading" || !address.trim()}
+                disabled={requestState === "loading" || !address.trim()}
                 className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#173f35] text-white transition hover:bg-[#245747] disabled:cursor-not-allowed disabled:bg-[#a8b8b1]"
                 aria-label="Go to address"
               >
-                {pageState === "loading" ? (
+                {requestState === "loading" ? (
                   <LoaderCircle size={17} className="animate-spin" aria-hidden="true" />
                 ) : (
                   <Search size={17} aria-hidden="true" />
@@ -258,7 +303,7 @@ export default function BrowserShell() {
           </p>
 
           <div className="min-h-[27rem] bg-[radial-gradient(ellipse_at_top,_#f1f7f4_0%,_#ffffff_56%)] px-5 py-8 sm:px-10 sm:py-12">
-            {pageState === "loading" && (
+            {requestState === "loading" && (
               <div
                 className="mx-auto flex max-w-md flex-col items-center py-20 text-center"
                 role="status"
@@ -270,28 +315,37 @@ export default function BrowserShell() {
               </div>
             )}
 
-            {(pageState === "error" || pageState === "not-found") && (
+            {(requestState === "error" || requestState === "not-found") && (
               <div
                 className="mx-auto max-w-lg rounded-2xl border border-[#eadbd6] bg-white p-7 shadow-sm"
                 role="alert"
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a05b4d]">
-                  {pageState === "not-found" ? "Address not found" : "Could not load page"}
+                  {requestState === "not-found" ? "Address not found" : "Could not load page"}
                 </p>
                 <h2 className="mt-2 text-xl font-semibold text-[#293b35]">
-                  {pageState === "not-found" ? address : "A small connection hiccup"}
+                  {requestState === "not-found" ? address : "A small connection hiccup"}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-[#6c7974]">{pageError}</p>
               </div>
             )}
 
-            {pageState === "loaded" && site && (
+            {requestState === "idle" && currentEntry && (
               <div className="mx-auto max-w-4xl">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-[#708079]">
-                  <span className="font-medium text-[#426357]">{site.title}</span>
-                  <span>{site.address} · by {people.find((person) => person._id === site.authorId)?.name ?? "a Small Web neighbor"}</span>
+                  <span className="font-medium text-[#426357]">{currentEntry.title}</span>
+                  <span>
+                    {currentEntry.address} · by {people.find((person) => person._id === currentEntry.site.authorId)?.name ?? "a Small Web neighbor"}
+                  </span>
                 </div>
-                <SiteFrame site={site} onNavigate={(nextAddress) => void navigateToAddress(nextAddress)} />
+                <SiteFrame
+                  key={currentEntry.id}
+                  entryId={currentEntry.id}
+                  site={currentEntry.site}
+                  initialScrollY={currentEntry.scrollY}
+                  onNavigate={handleInternalNavigate}
+                  onScroll={handleFrameScroll}
+                />
                 <p className="mt-3 flex items-center gap-2 px-1 text-xs text-[#7d8c85]">
                   <ShieldCheck size={14} aria-hidden="true" />
                   Scripts and external page resources are blocked inside this sandbox.
@@ -299,7 +353,7 @@ export default function BrowserShell() {
               </div>
             )}
 
-            {pageState === "idle" && (
+            {requestState === "idle" && !currentEntry && (
               <div className="mx-auto max-w-xl py-12 text-center sm:py-16">
                 <div className="mx-auto flex size-16 items-center justify-center rounded-3xl bg-[#e9f2ed] text-[#39705b]">
                   <Compass size={30} strokeWidth={1.6} aria-hidden="true" />
@@ -311,7 +365,7 @@ export default function BrowserShell() {
                   Where would you like to wander?
                 </h2>
                 <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#708079]">
-                  Choose who is browsing, then enter a .zz address. Each page lives inside this little world.
+                  Choose who is browsing, then enter a .zz address. Each page lives in this little world.
                 </p>
                 <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#e3ebe6] bg-white px-4 py-2 text-xs font-medium text-[#678077] shadow-sm">
                   <Sparkles size={14} aria-hidden="true" /> Try <span className="font-mono text-[#355b4d]">tidepool.zz</span>

@@ -4,8 +4,11 @@ import { useEffect, useMemo, useRef } from "react";
 import type { Site } from "@/types/api";
 
 interface SiteFrameProps {
+  entryId: string;
   site: Site;
+  initialScrollY: number;
   onNavigate: (address: string) => void;
+  onScroll: (entryId: string, scrollY: number) => void;
 }
 
 function getInternalAddress(href: string | null): string | null {
@@ -14,12 +17,25 @@ function getInternalAddress(href: string | null): string | null {
   return match?.[1].toLowerCase() ?? null;
 }
 
-export default function SiteFrame({ site, onNavigate }: SiteFrameProps) {
+export default function SiteFrame({
+  entryId,
+  site,
+  initialScrollY,
+  onNavigate,
+  onScroll,
+}: SiteFrameProps) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const listenerRef = useRef<{
     document: Document;
+    window: Window;
     handler: (event: MouseEvent) => void;
+    scrollHandler: () => void;
   } | null>(null);
+  const callbacksRef = useRef({ onNavigate, onScroll });
+
+  useEffect(() => {
+    callbacksRef.current = { onNavigate, onScroll };
+  }, [onNavigate, onScroll]);
 
   const srcDoc = useMemo(
     () => `<!doctype html>
@@ -46,6 +62,10 @@ export default function SiteFrame({ site, onNavigate }: SiteFrameProps) {
         listenerRef.current.handler,
         true,
       );
+      listenerRef.current.window.removeEventListener(
+        "scroll",
+        listenerRef.current.scrollHandler,
+      );
     }
 
     const handler = (event: MouseEvent) => {
@@ -56,11 +76,26 @@ export default function SiteFrame({ site, onNavigate }: SiteFrameProps) {
       event.preventDefault();
       event.stopPropagation();
       const address = getInternalAddress(anchor.getAttribute("href"));
-      if (address) onNavigate(address);
+      callbacksRef.current.onScroll(entryId, Math.round(frameWindow.scrollY));
+      if (address) callbacksRef.current.onNavigate(address);
+    };
+
+    const scrollHandler = () => {
+      callbacksRef.current.onScroll(entryId, Math.round(frameWindow.scrollY));
     };
 
     frameDocument.addEventListener("click", handler, true);
-    listenerRef.current = { document: frameDocument, handler };
+    frameWindow.addEventListener("scroll", scrollHandler, { passive: true });
+    listenerRef.current = {
+      document: frameDocument,
+      window: frameWindow,
+      handler,
+      scrollHandler,
+    };
+    frameWindow.requestAnimationFrame(() => {
+      frameWindow.scrollTo(0, initialScrollY);
+      scrollHandler();
+    });
   }
 
   useEffect(
@@ -70,6 +105,10 @@ export default function SiteFrame({ site, onNavigate }: SiteFrameProps) {
           "click",
           listenerRef.current.handler,
           true,
+        );
+        listenerRef.current.window.removeEventListener(
+          "scroll",
+          listenerRef.current.scrollHandler,
         );
       }
     },

@@ -14,3 +14,15 @@ export interface Site {
   createdAt: string;
   updatedAt: string;
 }
+
+export type NavigationSource = "typed" | "link" | "history" | "search" | "publish";
+
+export interface NavigationEntry {
+  id: string;
+  address: string;
+  siteId: string;
+  title: string;
+  site: Site;
+  source: NavigationSource;
+  scrollY: number;
+}
