@@ -9,6 +9,7 @@ import {
   Compass,
   Globe2,
   History as HistoryIcon,
+  House,
   PenLine,
   Search,
   ShieldCheck,
@@ -65,6 +66,7 @@ export default function BrowserShell() {
   const navigationEntries = useBrowserStore((state) => state.navigationEntries);
   const currentNavigationIndex = useBrowserStore((state) => state.currentNavigationIndex);
   const navigate = useBrowserStore((state) => state.navigate);
+  const goHome = useBrowserStore((state) => state.goHome);
   const goBack = useBrowserStore((state) => state.goBack);
   const goForward = useBrowserStore((state) => state.goForward);
   const saveScrollPosition = useBrowserStore((state) => state.saveScrollPosition);
@@ -242,6 +244,15 @@ export default function BrowserShell() {
     goBack();
   }
 
+  function handleHome() {
+    navigationRequestId.current += 1;
+    setPageError(null);
+    setVisitSaveError(null);
+    setRequestState("idle");
+    setAddress("");
+    goHome();
+  }
+
   function handleForward() {
     const target = navigationEntries[currentNavigationIndex + 1];
     if (!target) return;
@@ -355,6 +366,16 @@ export default function BrowserShell() {
                 className="flex size-9 items-center justify-center rounded-full text-[#68766e] transition hover:bg-[#eeece6] active:scale-90 disabled:cursor-not-allowed disabled:text-[#b4b7b0] disabled:hover:bg-transparent"
               >
                 <ArrowRight size={18} aria-hidden="true" />
+              </motion.button>
+              <motion.button
+                type="button"
+                onClick={handleHome}
+                aria-label="Home"
+                title="Home"
+                whileTap={{ scale: 0.88 }}
+                className="flex size-9 items-center justify-center rounded-full text-[#68766e] transition hover:bg-[#eeece6] active:scale-90"
+              >
+                <House size={17} aria-hidden="true" />
               </motion.button>
             </div>
 

@@ -11,6 +11,7 @@ interface BrowserStore {
   currentNavigationIndex: number;
   nextNavigationEntryId: number;
   navigate: (site: Site, source: NavigationSource) => void;
+  goHome: () => void;
   goBack: () => void;
   goForward: () => void;
   saveScrollPosition: (entryId: string, scrollY: number) => void;
@@ -32,6 +33,7 @@ export const useBrowserStore = create<BrowserStore>()(
       navigationEntries: [],
       currentNavigationIndex: -1,
       nextNavigationEntryId: 1,
+      goHome: () => set({ navigationEntries: [], currentNavigationIndex: -1 }),
       navigate: (site, source) =>
         set((state) => {
           const activeEntries = state.navigationEntries.slice(
