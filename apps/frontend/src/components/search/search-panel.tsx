@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import axios from "axios";
-import { AlertCircle, ArrowUpRight, FileSearch, LoaderCircle, Search } from "lucide-react";
+import { AlertCircle, ArrowUpRight, FileSearch, Search } from "lucide-react";
+import { motion } from "framer-motion";
 import { searchSites } from "@/lib/api";
 import type { SearchResult } from "@/types/api";
 
@@ -77,11 +78,11 @@ export default function SearchPanel({ onNavigate }: SearchPanelProps) {
   }
 
   return (
-    <section className="overflow-hidden rounded-[1.5rem] border border-[#dfe5e2] bg-white shadow-[0_18px_55px_-35px_rgba(26,55,46,0.28)]" aria-label="Search the Small Web">
-      <div className="border-b border-[#e8eeea] bg-[#fbfcfb] px-5 py-4">
+    <section className="overflow-hidden rounded-3xl border border-[#e2ded5] bg-white shadow-[0_18px_48px_-36px_rgba(31,42,36,0.4)]" aria-label="Search the Small Web">
+      <div className="border-b border-[#e2ded5] bg-[#faf9f6] px-5 py-4">
         <div className="flex items-center gap-2 text-[#426b5a]">
           <Search size={17} aria-hidden="true" />
-          <h2 className="text-sm font-semibold text-[#263d34]">Search the web</h2>
+          <h2 className="font-display text-2xl font-normal text-[#1b1f1d]">Search the web</h2>
         </div>
         <p className="mt-1 text-xs text-[#829089]">Find words in titles and page text</p>
       </div>
@@ -103,28 +104,17 @@ export default function SearchPanel({ onNavigate }: SearchPanelProps) {
             className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#173f35] text-white transition hover:bg-[#245747] disabled:cursor-not-allowed disabled:bg-[#a8b8b1]"
             aria-label="Search"
           >
-            {state === "loading" ? (
-              <LoaderCircle size={16} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <Search size={16} aria-hidden="true" />
-            )}
+            <Search size={16} aria-hidden="true" />
           </button>
         </div>
       </form>
 
-      <div className="max-h-[23rem] min-h-40 overflow-y-auto px-3 pb-3" aria-live="polite">
+      <div className="hide-scrollbar max-h-[calc(100vh-16rem)] min-h-40 overflow-y-auto px-3 pb-3" aria-live="polite">
         {state === "idle" && (
           <div className="flex min-h-36 flex-col items-center justify-center px-5 text-center">
             <FileSearch size={22} className="text-[#8ba197]" aria-hidden="true" />
             <p className="mt-3 text-sm font-medium text-[#53675e]">Search every little site</p>
             <p className="mt-1 text-xs leading-5 text-[#89958f]">Results include matching page content, not just titles.</p>
-          </div>
-        )}
-
-        {state === "loading" && (
-          <div className="flex min-h-36 flex-col items-center justify-center gap-2 text-xs text-[#839189]" role="status">
-            <LoaderCircle size={20} className="animate-spin text-[#668f7c]" aria-hidden="true" />
-            Searching “{searchedQuery}”…
           </div>
         )}
 
@@ -153,10 +143,13 @@ export default function SearchPanel({ onNavigate }: SearchPanelProps) {
                 : `${total} ${total === 1 ? "result" : "results"}`} for “{searchedQuery}”
             </p>
             {results.map((result) => (
-              <button
+              <motion.button
                 key={result.address}
                 type="button"
                 onClick={() => onNavigate(result.address)}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                 className="group mb-1 block w-full rounded-xl px-3 py-3 text-left transition hover:bg-[#f3f7f4] focus:bg-[#f3f7f4] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#9dbbac]"
                 aria-label={`Open ${result.title} at ${result.address}`}
               >
@@ -168,7 +161,7 @@ export default function SearchPanel({ onNavigate }: SearchPanelProps) {
                   <ArrowUpRight size={14} className="mt-0.5 shrink-0 text-[#a1afa8] transition group-hover:text-[#4f7b68]" aria-hidden="true" />
                 </span>
                 <span className="mt-2 block text-xs leading-5 text-[#77857e]">{result.excerpt}</span>
-              </button>
+              </motion.button>
             ))}
           </div>
         )}
