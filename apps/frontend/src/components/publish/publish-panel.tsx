@@ -48,6 +48,17 @@ export default function PublishPanel({
 
   useEffect(() => {
     if (!open) return;
+    setSlug("");
+    setTitle("");
+    setHtml("");
+    setPublisherId(defaultPublisherId);
+    setState("idle");
+    setError(null);
+    setPublishedAddress(null);
+  }, [open, defaultPublisherId]);
+
+  useEffect(() => {
+    if (!open) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     function handleKeyDown(event: KeyboardEvent) {
@@ -74,8 +85,11 @@ export default function PublishPanel({
         html,
         publisherId: selectedPublisherId,
       });
+      setSlug("");
+      setTitle("");
+      setHtml("");
+      setPublisherId(defaultPublisherId);
       setPublishedAddress(site.address);
-      setSlug(site.address.replace(/\.zz$/, ""));
       setState("success");
     } catch (publishError) {
       setError(describePublishError(publishError));
