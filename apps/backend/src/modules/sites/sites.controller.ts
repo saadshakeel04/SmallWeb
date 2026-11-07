@@ -12,6 +12,11 @@ export class SitesController {
     private readonly searchService: SearchService,
   ) {}
 
+  @Get()
+  findAll() {
+    return this.sitesService.findAll();
+  }
+
   @Get('search')
   search(@Query() query: SearchQueryDto) {
     return this.searchService.search(query.q);

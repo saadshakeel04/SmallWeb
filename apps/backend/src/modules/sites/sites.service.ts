@@ -19,6 +19,14 @@ export class SitesService {
     @InjectModel(Person.name) private readonly personModel: Model<PersonDocument>,
   ) {}
 
+  findAll() {
+    return this.siteModel
+      .find({}, { address: 1, title: 1, plainText: 1, authorId: 1 })
+      .sort({ createdAt: -1, address: 1 })
+      .lean()
+      .exec();
+  }
+
   async create(input: CreateSiteDto) {
     const address = normalizeAddress(input.address);
     const publisher = await this.personModel.findById(input.publisherId).select('_id').lean().exec();

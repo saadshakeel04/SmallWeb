@@ -44,7 +44,7 @@ export default function SiteFrame({
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'">
-  <style>body{margin:0;padding:1rem 1.25rem;color:#34473f;font:16px/1.8 Arial,Helvetica,sans-serif;overflow-wrap:anywhere}h1,h2,h3,h4{color:#203b32;line-height:1.25}a{color:#2d7057;text-underline-offset:3px}main{max-width:48rem;margin:0 auto}</style>
+  <style>html{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}body{margin:0;padding:1.5rem 1.75rem;color:#353a36;font:16px/1.8 Arial,Helvetica,sans-serif;overflow-wrap:anywhere}h1,h2,h3,h4{color:#1b2924;font-family:Georgia,'Times New Roman',serif;font-weight:400;line-height:1.18}a{color:#0f5a4c;text-underline-offset:4px}main{max-width:48rem;margin:0 auto}</style>
 </head>
 <body>${site.html}</body>
 </html>`,
@@ -122,7 +122,7 @@ export default function SiteFrame({
       srcDoc={srcDoc}
       sandbox="allow-same-origin"
       onLoad={handleLoad}
-      className="block h-[38rem] w-full rounded-xl border border-[#e2eae5] bg-white"
+      className="block h-[68vh] min-h-[32rem] max-h-[48rem] w-full rounded-2xl border border-[#e2ded5] bg-white"
       referrerPolicy="no-referrer"
     />
   );

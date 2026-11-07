@@ -60,6 +60,7 @@ responses are sanitized again before they are returned.
 After seeding, these endpoints should return data:
 
 - `GET http://localhost:3001/api/v1/people` — three people.
+- `GET http://localhost:3001/api/v1/sites` — the published site directory, with title, address, author, and plain-text summary.
 - `GET http://localhost:3001/api/v1/sites/tidepool.zz` — the Tidepool site.
 - `GET http://localhost:3001/api/v1/sites/search?q=unusual%20birds` — sites matching title or body text, including Quiet Forest by its seeded page text.
 - `POST http://localhost:3001/api/v1/sites` — publish a site with `address`, `title`, `html`, and `publisherId`.

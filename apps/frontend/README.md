@@ -28,10 +28,12 @@ Open `http://localhost:3000`, select a visitor, and enter an address such as
 by the backend and displayed inside a sandboxed iframe with scripts and network
 resources blocked. Internal `.zz` links are intercepted by the parent browser.
 
-Navigation entries and the current index are held in Zustand separately from
-persistent visit history. Back and Forward select cached entries without
-fetching the site again. Each entry keeps its own iframe scroll position, and a
-new successful navigation after Back truncates the forward entries.
+The current visitor and browser navigation stack are saved in browser storage,
+separately from server-side visit history. Refreshing restores the visitor, open
+page, Back/Forward stack, and each entry's iframe scroll position. Back and
+Forward select cached entries without fetching the site again, and a new
+successful navigation after Back truncates the forward entries. The start page
+loads published site cards from `GET /sites`.
 
 ## Validate
 

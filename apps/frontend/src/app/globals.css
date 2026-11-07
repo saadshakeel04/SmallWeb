@@ -1,14 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f6f8;
-  --foreground: #192327;
+  --background: #f3f1ec;
+  --foreground: #1b1f1d;
+  --surface: #ffffff;
+  --surface-raised: #faf9f6;
+  --line: #e2ded5;
+  --line-strong: #cdc8bd;
+  --ink-muted: #545b57;
+  --ink-subtle: #777f79;
+  --primary: #0f3832;
+  --primary-hover: #174b43;
+  --secondary: #e8efe9;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: Arial, Helvetica, sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
   --font-mono: "Courier New", monospace;
 }
 
@@ -26,6 +36,25 @@ select {
 }
 
 ::selection {
-  background: #d9eee7;
-  color: #173f35;
+  background: #dbe9df;
+  color: #0f3832;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
 }

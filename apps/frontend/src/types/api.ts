@@ -15,6 +15,14 @@ export interface Site {
   updatedAt: string;
 }
 
+export interface DirectorySite {
+  _id: string;
+  address: string;
+  title: string;
+  plainText: string;
+  authorId: string;
+}
+
 export type NavigationSource = "typed" | "link" | "history" | "search" | "publish";
 export type VisitSource = NavigationSource;
 
