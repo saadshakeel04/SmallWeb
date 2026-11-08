@@ -314,6 +314,7 @@ export default function BrowserShell() {
               onChange={handlePersonChange}
             />
             <button
+              suppressHydrationWarning
               type="button"
               onClick={() => setPublishOpen(true)}
               className="inline-flex h-10 items-center gap-2 rounded-full bg-[#0f5a4c] px-4 text-sm font-medium text-white shadow-sm transition hover:bg-[#174b43] active:scale-[0.97]"
@@ -324,6 +325,7 @@ export default function BrowserShell() {
             {peopleError && (
               <div className="flex items-center gap-2 text-xs text-[#a33f37]" role="alert">
                 <button
+                  suppressHydrationWarning
                   type="button"
                   onClick={() => void loadPeople()}
                   className="font-medium underline underline-offset-2"
@@ -346,6 +348,7 @@ export default function BrowserShell() {
           <div className="flex items-center gap-2 border-b border-[#e2ded5] bg-[#faf9f6] px-3 py-3 sm:gap-3 sm:px-4">
             <div className="flex items-center gap-2" aria-label="Browser navigation">
               <motion.button
+                suppressHydrationWarning
                 type="button"
                 onClick={handleBack}
                 disabled={currentNavigationIndex <= 0}
@@ -357,6 +360,7 @@ export default function BrowserShell() {
                 <ArrowLeft size={18} aria-hidden="true" />
               </motion.button>
               <motion.button
+                suppressHydrationWarning
                 type="button"
                 onClick={handleForward}
                 disabled={currentNavigationIndex >= navigationEntries.length - 1}
@@ -368,6 +372,7 @@ export default function BrowserShell() {
                 <ArrowRight size={18} aria-hidden="true" />
               </motion.button>
               <motion.button
+                suppressHydrationWarning
                 type="button"
                 onClick={handleHome}
                 aria-label="Home"
@@ -380,6 +385,7 @@ export default function BrowserShell() {
             </div>
 
             <form
+              suppressHydrationWarning
               onSubmit={handleNavigate}
               className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-[#e2ded5] bg-white px-3 py-1.5 transition focus-within:border-[#92a99b] focus-within:ring-4 focus-within:ring-[#e7eee8]"
             >
@@ -392,6 +398,7 @@ export default function BrowserShell() {
                 Website address
               </label>
               <input
+                suppressHydrationWarning
                 id="address"
                 type="text"
                 inputMode="url"
@@ -404,6 +411,7 @@ export default function BrowserShell() {
                 className="min-w-0 flex-1 bg-transparent py-2 font-mono text-[13px] text-[#34423a] outline-none placeholder:font-sans placeholder:text-[13px] placeholder:text-[#979a91]"
               />
               <button
+                suppressHydrationWarning
                 type="submit"
                 disabled={requestState === "loading" || !address.trim()}
                 className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#0f5a4c] text-white transition hover:bg-[#174b43] active:scale-95 disabled:cursor-not-allowed disabled:bg-[#a8b8b1]"
@@ -526,7 +534,7 @@ export default function BrowserShell() {
                 {directoryError && (
                   <div className="mx-auto mt-8 max-w-lg rounded-2xl border border-[#ead7cf] bg-[#fcf6f2] px-4 py-3 text-center text-sm text-[#8d5147]" role="alert">
                     <p>{directoryError}</p>
-                    <button type="button" onClick={() => void loadDirectory()} className="mt-2 font-medium underline underline-offset-2">Try again</button>
+                    <button suppressHydrationWarning type="button" onClick={() => void loadDirectory()} className="mt-2 font-medium underline underline-offset-2">Try again</button>
                   </div>
                 )}
                 {!directoryLoading && !directoryError && directorySites.length > 0 && (
@@ -539,6 +547,7 @@ export default function BrowserShell() {
                     {directorySites.map((site) => (
                       <motion.li key={site._id} variants={directoryCardVariants}>
                         <button
+                          suppressHydrationWarning
                           type="button"
                           onClick={() => void navigateToAddress(site.address, "typed")}
                           className="group flex h-full min-h-44 w-full flex-col rounded-2xl border border-[#e6e1d8] bg-[#fffefa] p-4 text-left transition duration-300 hover:-translate-y-0.5 hover:border-[#c7d5c9] hover:bg-[#fdfcf8] hover:shadow-[0_12px_30px_-20px_rgba(23,65,52,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#e8eee8] sm:p-5"
@@ -572,6 +581,7 @@ export default function BrowserShell() {
         <div className="min-w-0">
           <div className="mb-3 flex rounded-2xl border border-[#e2ded5] bg-white p-1 shadow-[0_2px_9px_-6px_rgba(31,42,36,0.45)]" role="tablist" aria-label="Browser side panel">
             <button
+              suppressHydrationWarning
               type="button"
               role="tab"
               aria-selected={sidebarTab === "history"}
@@ -582,6 +592,7 @@ export default function BrowserShell() {
               <HistoryIcon size={14} aria-hidden="true" /> History
             </button>
             <button
+              suppressHydrationWarning
               type="button"
               role="tab"
               aria-selected={sidebarTab === "search"}

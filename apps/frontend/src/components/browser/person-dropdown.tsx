@@ -59,6 +59,7 @@ export default function PersonDropdown({ people, selectedPerson, loading, onChan
   return (
     <div ref={rootRef} className="relative">
       <button
+        suppressHydrationWarning
         ref={triggerRef}
         type="button"
         role="combobox"
@@ -98,6 +99,7 @@ export default function PersonDropdown({ people, selectedPerson, loading, onChan
             const selected = person._id === selectedPerson?._id;
             return (
               <button
+                suppressHydrationWarning
                 key={person._id}
                 type="button"
                 role="option"

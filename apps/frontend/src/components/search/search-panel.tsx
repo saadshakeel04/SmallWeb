@@ -87,10 +87,11 @@ export default function SearchPanel({ onNavigate }: SearchPanelProps) {
         <p className="mt-1 text-xs text-[#829089]">Find words in titles and page text</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-4">
+      <form suppressHydrationWarning onSubmit={handleSubmit} className="p-4">
         <label htmlFor="small-web-search" className="sr-only">Search all websites</label>
         <div className="flex items-center gap-2 rounded-xl border border-[#dce5e0] bg-white px-3 py-1.5 focus-within:border-[#78a591] focus-within:ring-4 focus-within:ring-[#e4f0ea]">
           <input
+            suppressHydrationWarning
             id="small-web-search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -99,6 +100,7 @@ export default function SearchPanel({ onNavigate }: SearchPanelProps) {
             className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#233a32] outline-none placeholder:text-[#9ba8a2]"
           />
           <button
+            suppressHydrationWarning
             type="submit"
             disabled={state === "loading" || !query.trim()}
             className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#173f35] text-white transition hover:bg-[#245747] disabled:cursor-not-allowed disabled:bg-[#a8b8b1]"
@@ -144,6 +146,7 @@ export default function SearchPanel({ onNavigate }: SearchPanelProps) {
             </p>
             {results.map((result) => (
               <motion.button
+                suppressHydrationWarning
                 key={result.address}
                 type="button"
                 onClick={() => onNavigate(result.address)}

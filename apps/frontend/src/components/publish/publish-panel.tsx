@@ -108,6 +108,7 @@ export default function PublishPanel({
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-5">
           <motion.button
+            suppressHydrationWarning
             type="button"
             aria-label="Close publish dialog"
             initial={{ opacity: 0 }}
@@ -137,6 +138,7 @@ export default function PublishPanel({
                 </p>
               </div>
               <button
+                suppressHydrationWarning
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
@@ -146,11 +148,12 @@ export default function PublishPanel({
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
+            <form suppressHydrationWarning onSubmit={handleSubmit} className="mt-5 space-y-3.5">
               <label className="block">
                 <span className="mb-1.5 block text-[13px] font-medium text-[#303a33]">Publishing as</span>
                 <span className="relative block">
                   <select
+                    suppressHydrationWarning
                     required
                     value={selectedPublisherId}
                     onChange={(event) => { setPublisherId(event.target.value); clearFeedback(); }}
@@ -168,6 +171,7 @@ export default function PublishPanel({
                 <span className="mb-1.5 block text-[13px] font-medium text-[#303a33]">Address</span>
                 <span className="flex overflow-hidden rounded-xl border border-[#e2ded5] bg-white transition focus-within:border-[#879d8f] focus-within:ring-4 focus-within:ring-[#e8eee8]">
                   <input
+                    suppressHydrationWarning
                     required
                     pattern="[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*"
                     maxLength={249}
@@ -185,6 +189,7 @@ export default function PublishPanel({
               <label className="block">
                 <span className="mb-1.5 block text-[13px] font-medium text-[#303a33]">Title</span>
                 <input
+                  suppressHydrationWarning
                   required
                   maxLength={160}
                   value={title}
@@ -197,6 +202,7 @@ export default function PublishPanel({
               <label className="block">
                 <span className="mb-1.5 block text-[13px] font-medium text-[#303a33]">Page</span>
                 <textarea
+                  suppressHydrationWarning
                   required
                   maxLength={50000}
                   rows={6}
@@ -220,7 +226,7 @@ export default function PublishPanel({
                   <div className="flex items-center gap-2 text-[13px] font-medium text-[#386451]">
                     <CheckCircle2 size={16} aria-hidden="true" /> Published {publishedAddress}
                   </div>
-                  <button type="button" onClick={() => { onVisit(publishedAddress); onClose(); }} className="mt-2 text-[13px] font-semibold text-[#275a49] underline decoration-[#a7c0ad] underline-offset-2 hover:text-[#163f34]">
+                  <button suppressHydrationWarning type="button" onClick={() => { onVisit(publishedAddress); onClose(); }} className="mt-2 text-[13px] font-semibold text-[#275a49] underline decoration-[#a7c0ad] underline-offset-2 hover:text-[#163f34]">
                     Visit your new site
                   </button>
                 </div>
@@ -228,6 +234,7 @@ export default function PublishPanel({
 
               <div className="flex items-center justify-end gap-2 pt-1">
                 <button
+                  suppressHydrationWarning
                   type="button"
                   onClick={onClose}
                   className="h-10 rounded-full px-5 text-[13px] font-medium text-[#687169] transition hover:bg-[#f3f1ec] hover:text-[#25332b]"
@@ -235,6 +242,7 @@ export default function PublishPanel({
                   Cancel
                 </button>
                 <button
+                  suppressHydrationWarning
                   type="submit"
                   disabled={state === "loading" || people.length === 0}
                   className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#0f5a4c] px-6 text-[13px] font-medium text-white shadow-sm transition hover:bg-[#174b43] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"

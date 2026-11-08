@@ -80,6 +80,7 @@ export default function HistoryPanel({ person, refreshToken, onNavigate }: Histo
       <div className="flex items-center justify-between px-5 py-3 text-xs text-[#829089]">
         <span>{result ? `${firstItem}–${lastItem} of ${result.total}` : "Recent visits"}</span>
         <button
+          suppressHydrationWarning
           type="button"
           onClick={retry}
           disabled={loading}
@@ -94,7 +95,7 @@ export default function HistoryPanel({ person, refreshToken, onNavigate }: Histo
       {error && (
         <div className="mx-4 mb-3 rounded-xl border border-[#f0d5ce] bg-[#fff8f5] p-3" role="alert">
           <p className="text-xs leading-5 text-[#93483e]">{error}</p>
-          <button type="button" onClick={retry} className="mt-2 text-xs font-semibold text-[#93483e] underline underline-offset-2">
+          <button suppressHydrationWarning type="button" onClick={retry} className="mt-2 text-xs font-semibold text-[#93483e] underline underline-offset-2">
             Try again
           </button>
         </div>
@@ -111,6 +112,7 @@ export default function HistoryPanel({ person, refreshToken, onNavigate }: Histo
 
         {result?.items.map((visit, index) => (
           <motion.button
+            suppressHydrationWarning
             key={visit._id}
             type="button"
             onClick={() => onNavigate(visit.address)}
@@ -138,6 +140,7 @@ export default function HistoryPanel({ person, refreshToken, onNavigate }: Histo
 
       <div className="flex items-center justify-between border-t border-[#e2ded5] bg-[#faf9f6] px-4 py-3">
         <button
+          suppressHydrationWarning
           type="button"
           onClick={() => changePage(page - 1)}
           disabled={page <= 1 || loading}
@@ -147,6 +150,7 @@ export default function HistoryPanel({ person, refreshToken, onNavigate }: Histo
         </button>
         <span className="text-[11px] text-[#87948d]">Page {page} of {totalPages}</span>
         <button
+          suppressHydrationWarning
           type="button"
           onClick={() => changePage(page + 1)}
           disabled={!result || page >= result.totalPages || loading}
